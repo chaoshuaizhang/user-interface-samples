@@ -16,11 +16,14 @@
 
 package com.google.android.samples.insetsanimation
 
+import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 
 /**
  * A class which extends/implements both [WindowInsetsAnimationCompat.Callback] and
@@ -56,16 +59,9 @@ import androidx.core.view.WindowInsetsCompat
  * any related [WindowInsetsAnimationCompat]s have ended
  */
 class RootViewDeferringInsetsCallback(
-    val persistentInsetTypes: Int,
     val deferredInsetTypes: Int
-) : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE),
+) : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE), // DISPATCH_MODE_STOP
     OnApplyWindowInsetsListener {
-    init {
-        require(persistentInsetTypes and deferredInsetTypes == 0) {
-            "persistentInsetTypes and deferredInsetTypes can not contain any of " +
-                    " same WindowInsetsCompat.Type values"
-        }
-    }
 
     private var view: View? = null
     private var lastWindowInsets: WindowInsetsCompat? = null
@@ -78,17 +74,19 @@ class RootViewDeferringInsetsCallback(
     ): WindowInsetsCompat {
         // Store the view and insets for us in onEnd() below
         view = v
+        Log.d("TAGTAGTAG", "onApplyWindowInsets:  ${v}")
         lastWindowInsets = windowInsets
 
         val types = when {
             // When the deferred flag is enabled, we only use the systemBars() insets
-            deferredInsets -> persistentInsetTypes
+            deferredInsets -> WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.navigationBars()
             // Otherwise we handle the combination of the the systemBars() and ime() insets
-            else -> persistentInsetTypes or deferredInsetTypes
+            else -> deferredInsetTypes or WindowInsetsCompat.Type.systemBars()
         }
 
         // Finally we apply the resolved insets by setting them as padding
         val typeInsets = windowInsets.getInsets(types)
+        Log.d("TAGTAGTAG", "$typeInsets")
         v.setPadding(typeInsets.left, typeInsets.top, typeInsets.right, typeInsets.bottom)
 
         // We return the new WindowInsetsCompat.CONSUMED to stop the insets being dispatched any

@@ -16,10 +16,14 @@
 
 package com.google.android.samples.insetsanimation
 
+import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 
 /**
  * A [WindowInsetsAnimationCompat.Callback] which will translate/move the given view during any
@@ -39,15 +43,39 @@ import androidx.core.view.WindowInsetsCompat
  * See [WindowInsetsAnimationCompat.Callback.getDispatchMode].
  */
 class TranslateDeferringInsetsAnimationCallback(
-    private val view: View,
     val persistentInsetTypes: Int,
     val deferredInsetTypes: Int,
-    dispatchMode: Int = DISPATCH_MODE_STOP
+    dispatchMode: Int = DISPATCH_MODE_STOP,
+    vararg _views: View,
 ) : WindowInsetsAnimationCompat.Callback(dispatchMode) {
+
+    private var views: Array<out View>
+
     init {
+        views = _views
         require(persistentInsetTypes and deferredInsetTypes == 0) {
             "persistentInsetTypes and deferredInsetTypes can not contain any of " +
                     " same WindowInsetsCompat.Type values"
+        }
+    }
+
+    private var barAnim = false
+
+    override fun onPrepare(animation: WindowInsetsAnimationCompat) {
+        super.onPrepare(animation)
+        Log.d(
+            "cbhfbdcddsdavhfbd",
+            "${views[0].translationY}\n"
+            + "prepare: ${ViewCompat.getRootWindowInsets(views[0])?.isVisible(WindowInsetsCompat.Type.ime())}"
+        )
+        barAnim = true
+        when (ViewCompat.getRootWindowInsets(views[0])?.isVisible(WindowInsetsCompat.Type.ime())) {
+            false -> {
+                if (views[0].translationY == 0f) {
+                    // 功能区正在显示
+                    barAnim = false
+                }
+            }
         }
     }
 
@@ -55,6 +83,18 @@ class TranslateDeferringInsetsAnimationCallback(
         insets: WindowInsetsCompat,
         runningAnimations: List<WindowInsetsAnimationCompat>
     ): WindowInsetsCompat {
+        Log.d(
+            "cbhfbdvhfbd",
+            "${ViewCompat.getRootWindowInsets(views[0])?.isVisible(WindowInsetsCompat.Type.ime())}"
+        )
+        if (ViewCompat.getRootWindowInsets(views[0])
+                ?.isVisible(WindowInsetsCompat.Type.ime()) == false
+        ) return insets
+
+        if ((views[0].parent as ViewGroup).findViewById<View>(R.id.bar2).isVisible) {
+            return insets
+        }
+
         // onProgress() is called when any of the running animations progress...
 
         // First we get the insets which are potentially deferred
@@ -70,15 +110,28 @@ class TranslateDeferringInsetsAnimationCallback(
 
         // The resulting `diff` insets contain the values for us to apply as a translation
         // to the view
-        view.translationX = (diff.left - diff.right).toFloat()
-        view.translationY = (diff.top - diff.bottom).toFloat()
+
+        views.forEach { view ->
+            view.translationX = (diff.left - diff.right).toFloat()
+            view.translationY = (diff.top - diff.bottom).toFloat()
+
+            Log.d("DFGHJ", "")
+            Log.d("DFGHJ", "${view.translationY}")
+        }
 
         return insets
     }
 
     override fun onEnd(animation: WindowInsetsAnimationCompat) {
         // Once the animation has ended, reset the translation values
-        view.translationX = 0f
-        view.translationY = 0f
+        views.forEach { view ->
+            view.translationX = 0f
+            view.translationY = 0f
+        }
+        if (ViewCompat.getRootWindowInsets(views[0])?.isVisible(WindowInsetsCompat.Type.ime()) == true
+            && (views[0].parent as ViewGroup).findViewById<View>(R.id.bar2).isVisible
+        ) {
+            (views[0].parent as ViewGroup).findViewById<View>(R.id.bar2).isVisible = false
+        }
     }
 }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2020 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +14,7 @@
   ~ limitations under the License.
 -->
 
-<com.google.android.samples.insetsanimation.InsetsAnimationLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -47,6 +46,35 @@
 
     </com.google.android.material.appbar.MaterialToolbar>
 
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <EditText
+            android:id="@+id/message_edittext2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/message_hint" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="#00000000"
+        android:text="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        android:gravity="top" />
+
+    <EditText
+        android:id="@+id/content"
+        android:background="#ffff00"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:text="QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ"
+        android:gravity="top"
+        android:layout_weight="1" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/conversation_recyclerview"
         android:layout_width="match_parent"
@@ -55,24 +83,41 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         android:paddingVertical="@dimen/spacing_small"
+        android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:reverseLayout="true"
         tools:itemCount="20"
         tools:listitem="@layout/message_bubble_other" />
 
+    <TextView
+        android:id="@+id/bar"
+        android:text="哈哈哈"
+        android:gravity="bottom"
+        android:background="#cccccc"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"/>
+
+    <TextView
+        android:id="@+id/bar2"
+        android:visibility="gone"
+        android:gravity="bottom"
+        android:text="12345"
+        android:background="#eeeeee"
+        android:layout_width="match_parent"
+        android:layout_height="825px"/>
+
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/message_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
-        android:elevation="@dimen/spacing_micro"
-        android:padding="@dimen/spacing_small">
+        android:elevation="@dimen/spacing_micro">
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0px"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spacing_micro"
             android:layout_weight="1">
 
             <EditText
@@ -96,4 +141,4 @@
 
     </LinearLayout>
 
-</com.google.android.samples.insetsanimation.InsetsAnimationLinearLayout>
+</LinearLayout>

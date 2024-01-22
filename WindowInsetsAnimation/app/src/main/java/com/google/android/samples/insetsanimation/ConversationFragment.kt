@@ -22,7 +22,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.samples.insetsanimation.databinding.FragmentConversationBinding
 
@@ -59,7 +61,6 @@ class ConversationFragment : Fragment() {
          * (see that class for more information).
          */
         val deferringInsetsListener = RootViewDeferringInsetsCallback(
-            persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
             deferredInsetTypes = WindowInsetsCompat.Type.ime()
         )
         // RootViewDeferringInsetsCallback is both an WindowInsetsAnimation.Callback and an
@@ -83,24 +84,26 @@ class ConversationFragment : Fragment() {
          * [RootViewDeferringInsetsCallback] on the layout's root view.
          */
         ViewCompat.setWindowInsetsAnimationCallback(
-            binding.messageHolder,
+            binding.bar,
             TranslateDeferringInsetsAnimationCallback(
-                view = binding.messageHolder,
                 persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
                 deferredInsetTypes = WindowInsetsCompat.Type.ime(),
                 // We explicitly allow dispatch to continue down to binding.messageHolder's
                 // child views, so that step 2.5 below receives the call
-                dispatchMode = WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+                dispatchMode = WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP,
+                binding.bar
             )
         )
-        ViewCompat.setWindowInsetsAnimationCallback(
-            binding.conversationRecyclerview,
-            TranslateDeferringInsetsAnimationCallback(
-                view = binding.conversationRecyclerview,
-                persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
-                deferredInsetTypes = WindowInsetsCompat.Type.ime()
-            )
-        )
+//
+//        ViewCompat.setWindowInsetsAnimationCallback(
+//            binding.content,
+//            TranslateDeferringInsetsAnimationCallback(
+//                persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
+//                deferredInsetTypes = WindowInsetsCompat.Type.ime(),
+//                dispatchMode = DISPATCH_MODE_STOP,
+//                binding.content
+//            )
+//        )
 
         /**
          * 2.5) We also want to make sure that our EditText is focused once the IME
@@ -115,10 +118,10 @@ class ConversationFragment : Fragment() {
          * [WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE] dispatch mode, which
          * we have done above.
          */
-        ViewCompat.setWindowInsetsAnimationCallback(
-            binding.messageEdittext,
-            ControlFocusInsetsAnimationCallback(binding.messageEdittext)
-        )
+//        ViewCompat.setWindowInsetsAnimationCallback(
+//            binding.messageEdittext,
+//            ControlFocusInsetsAnimationCallback(binding.messageEdittext)
+//        )
 
         /**
          * 3) The third step is when the app wants to control and drive an inset animation.
@@ -136,6 +139,15 @@ class ConversationFragment : Fragment() {
          * class bundled in this sample called [SimpleImeAnimationController], which simplifies
          * much of the mechanics for controlling a [WindowInsetsAnimationCompat].
          */
+
+        binding.bar.setOnClickListener {
+            if (binding.bar2.isVisible) binding.messageEdittext2.showKeyboard()
+            else binding.messageEdittext2.hideKeyboard()
+
+            // binding.bar2.isVisible = !binding.bar2.isVisible
+            if (binding.bar2.isVisible == false) binding.bar2.isVisible = true
+        }
+
     }
 
     override fun onDestroyView() {

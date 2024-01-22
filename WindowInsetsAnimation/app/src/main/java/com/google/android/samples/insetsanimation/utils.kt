@@ -21,6 +21,8 @@ import android.graphics.Rect
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 
 private val tmpIntArr = IntArray(2)
@@ -68,4 +70,12 @@ private fun hiddenSuppressLayout(group: ViewGroup, suppress: Boolean) {
             tryHiddenSuppressLayout = false
         }
     }
+}
+
+fun View.hideKeyboard() {
+    ViewCompat.getWindowInsetsController(this)?.hide(WindowInsetsCompat.Type.ime())
+}
+
+fun View.showKeyboard() {
+    ViewCompat.getWindowInsetsController(this)?.show(WindowInsetsCompat.Type.ime())
 }
